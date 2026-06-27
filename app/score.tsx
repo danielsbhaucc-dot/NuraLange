@@ -71,7 +71,7 @@ export default function ScoreScreen() {
                   <Ionicons name="bookmark" size={20} color={colors.accent} />
                 </View>
               ))}
-              <Text style={styles.naturalInsert}>{t.naturalInsert}</Text>
+              <Text style={styles.naturalInsert}>{he.conversation.naturalInsert}</Text>
             </GlassCard>
           )}
 

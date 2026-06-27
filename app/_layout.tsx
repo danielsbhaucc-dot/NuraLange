@@ -1,17 +1,53 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
+
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { I18nManager, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { colors } from '@/constants/theme';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function RootLayout() {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    if (!I18nManager.isRTL) {
-      I18nManager.allowRTL(true);
-      I18nManager.forceRTL(true);
+    let done = false;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setReady(true);
+    };
+
+    const timeout = setTimeout(finish, 2500);
+
+    if (useAppStore.persist.hasHydrated()) {
+      clearTimeout(timeout);
+      finish();
+      return;
     }
+
+    const unsubscribe = useAppStore.persist.onFinishHydration(() => {
+      clearTimeout(timeout);
+      finish();
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      unsubscribe();
+    };
   }, []);
+
+  if (!ready) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <StatusBar style="light" />
@@ -19,7 +55,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
-          animation: 'slide_from_right',
+          animation: Platform.OS === 'web' ? 'fade' : 'slide_from_right',
         }}
       >
         <Stack.Screen name="index" />
@@ -37,5 +73,13 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: {
+    flex: 1,
+  },
+  loading: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

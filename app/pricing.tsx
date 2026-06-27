@@ -10,6 +10,7 @@ import { colors, spacing, typography } from '@/constants/theme';
 import {
   EXTRA_LESSON_PACKS,
   SUBSCRIPTION_TIERS,
+  addExtraPack,
   pricePerLesson,
   savingsVsSingleLesson,
 } from '@/lib/pricing';
@@ -46,7 +47,6 @@ export default function PricingScreen() {
     const pack = EXTRA_LESSON_PACKS.find((p) => p.id === packId)!;
     const result = await paymentService.purchaseExtraPack(packId, subscription.tierId);
     if (result.success) {
-      const { addExtraPack } = await import('@/lib/pricing');
       updateSubscription(addExtraPack(subscription, pack));
     }
     setLoading(false);

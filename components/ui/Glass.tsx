@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
@@ -10,6 +9,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { SafeBlur } from '@/components/ui/SafeBlur';
 import { colors, glass, radius, spacing } from '@/constants/theme';
 
 interface GlassCardProps {
@@ -31,9 +31,7 @@ export function GlassCard({
 }: GlassCardProps) {
   const content = (
     <View style={[styles.wrapper, glow !== 'none' && styles[`glow_${glow}`], style]}>
-      {Platform.OS !== 'web' ? (
-        <BlurView intensity={intensity} tint="dark" style={StyleSheet.absoluteFill} />
-      ) : null}
+      <SafeBlur intensity={intensity} style={StyleSheet.absoluteFill} />
       <View style={[styles.inner, { padding }]}>{children}</View>
     </View>
   );
